@@ -16,3 +16,15 @@ print(m.group("define"))
 print(m.group("zhiyu"))
 print(m.group("dataDefine"))
 print(m.group("beizhu").rstrip())
+
+
+import pandas as pd
+import numpy as np
+
+
+df_1 = pd.DataFrame(np.random.rand(20,10))
+df_2 = pd.DataFrame(np.random.rand(10,1))
+
+with pd.ExcelWriter('mult_sheets_1.xlsx') as writer1:
+    df_1.to_excel(writer1, sheet_name = 'df_1', index = False)
+    df_2.to_excel(writer1, sheet_name = 'df_2', index = False)
