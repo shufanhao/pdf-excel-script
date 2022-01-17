@@ -11,8 +11,8 @@ field_name_rex = "5.\d+.\d+ (.+)"
 end_flag_rex = "6 .+"
 
 field_column_regex = (
-    # (.|\n)* 意思是匹配 多个或者0个任意字符包括\n
-    r"(.|\n)*要素名称 +(?P<yaosuName>.+)\n英文名称 +(?P<englishName>(.|\n)*)\n定义 +(?P<define>(.|\n)*)\n值域 +(?P<zhiyu>(.|\n)*)\n数据表示 +(?P<dataDefine>(.|\n)*)\n备注 +(?P<beizhu>(.|\n)*)"
+    # (.|\n)* 意思是匹配 多个或者0个任意字符包括\n,  因为英文名称和数据表示可能没有，所以用?表示可能没有，比方(?P<englishName>(.|\n)*)\n)?， 最后一个?是表示前面这个表达式可能没有。
+    r"(.|\n)*要素名称 +(?P<yaosuName>.+)\n(英文名称 +(?P<englishName>(.|\n)*)\n)?定义 +(?P<define>(.|\n)*)\n值域 +(?P<zhiyu>(.|\n)*)\n(数据表示 +(?P<dataDefine>(.|\n)*)\n)?备注 +(?P<beizhu>(.|\n)*)"
 )
 
 column = {'表名': [], '编号': [], '报送机构': [], '一级分类': [], '二级分类': [], '报表': [], '字段': [], '样例': [], '表结构备注': [], '报送文档来源ID': [], '定义': [], '值域': [], '数据表示': [], '备注': []}
@@ -82,8 +82,11 @@ class PdfToExcel:
         """
         m = re.match(field_column_regex, field_content)
         if m:
+            dataDefine = ""
+            if m.group("dataDefine"):
+                dataDefine = m.group("dataDefine").rstrip()
             excel_line = [table_name, 5, '理财中心', '产品信息', '产品信息', '发行登记', m.group("yaosuName").rstrip(), '', '', field_name.rstrip(), m.group("define").rstrip(), m.group("zhiyu").rstrip(),
-                          m.group("dataDefine").rstrip(), m.group("beizhu").rstrip()]
+                          dataDefine, m.group("beizhu").rstrip()]
             print(f"Generated excel line: {excel_line}")
             self.excel_datas.append(excel_line)
             field_content = ''
