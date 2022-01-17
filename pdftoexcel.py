@@ -11,6 +11,7 @@ field_name_rex = "5.\d+.\d+ (.+)"
 end_flag_rex = "6 .+"
 
 field_column_regex = (
+    # (.|\n)* 意思是匹配 多个或者0个任意字符包括\n
     r"(.|\n)*要素名称 +(?P<yaosuName>.+)\n英文名称 +(?P<englishName>(.|\n)*)\n定义 +(?P<define>(.|\n)*)\n值域 +(?P<zhiyu>(.|\n)*)\n数据表示 +(?P<dataDefine>(.|\n)*)\n备注 +(?P<beizhu>(.|\n)*)"
 )
 
@@ -26,7 +27,7 @@ class PdfToExcel:
         self.tables_fields = []
         self.excel_datas = []  # [['zs', 'ls', 'ww'], ['man', 'man', 'woman']]
 
-    def extract_txt(self, page_start, page_end):
+    def extract_txt(self, page_start=0, page_end=0):
         """
         extract txt
         :param page_start: index from 1
@@ -97,8 +98,8 @@ class PdfToExcel:
         print(f"Generated excel with sheet name: fanhaoawcl")
 
     def main(self):
-        # 读取目录：
-        raw_content = self.extract_txt(2, 3)
+        # 读取pdf txt, 请修改page_satrt, page_end
+        raw_content = self.extract_txt(page_start=2, page_end=3)
         self.parse_pdf_build_pd(raw_content)
         self.write_into_excel()
 
